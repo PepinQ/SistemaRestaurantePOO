@@ -16,7 +16,10 @@ public class Main {
             System.out.println(resposta);
             System.out.println("0- Voltar");
             d = scanner.nextInt();
-            if(d==0){
+            if(d<=0 || d>5){
+                return;
+            }else if(table[d-1].statusMesa=="Mesa Ocupada"){
+                System.out.println("Mesa escolhida encontra-se ocupada");
                 return;
             }else{
                 table[d-1].statusMesa="Mesa Ocupada";
@@ -43,17 +46,55 @@ public class Main {
         }
         message.append("Total = " + total + "\n");
         String comanda = message.toString();
+        table.pedido = comanda;
         System.out.println(comanda);
         table.preco=total;
+        table.statusPedido="Em Andamento";
     }
+
+    static void entregarMesa(Mesa[] table){
+        Scanner scanner = new Scanner(System.in);
+        StringBuilder message = new StringBuilder();
+        int d=5, a;
+        System.out.println("Mesas disponíveis para entrega: \n");
+        for(int contador=0;contador<5;contador++){
+            if(table[contador].statusMesa == "Mesa Livre"){
+                continue;
+            }else{
+                message.append("Mesa " + (contador+1) + "\n");
+            }
+        }
+        String resposta = message.toString();
+        System.out.println(resposta);
+        System.out.println("0- Voltar");
+        d = scanner.nextInt();
+        if(d<=0 || d>5){
+            return;
+        }else if(table[d-1].statusPedido!="Completo"){
+            System.out.println("Mesa Escolhida Inválida");
+            return;
+        }else{
+            System.out.println("Pedido da Mesa " + d + ":\n" + table[d-1].pedido + "Declarar esse pedido como entregue? (1-Sim/0-Não)\n");
+            a = scanner.nextInt();
+            if(a==1){
+                System.out.println("Pedido Entregue com Sucesso!\n");
+                table[d-1].statusPedido="Entregue";
+            }else{
+                return;
+            }
+        }
+    }
+
     public static void main(String[] args) {
+        Chef cozinheiro = new Chef();
+        Caixa caixa = new Caixa();
         Mesa[] table;
         table = new Mesa[5];
-        table[0] = new Mesa("Mesa Livre");
-        table[1] = new Mesa("Mesa Livre");
-        table[2] = new Mesa("Mesa Livre");
-        table[3] = new Mesa("Mesa Livre");
-        table[4] = new Mesa("Mesa Livre");
+        table[0] = new Mesa("Mesa Livre", "Não Realizado");
+        table[1] = new Mesa("Mesa Livre", "Não Realizado");
+        table[2] = new Mesa("Mesa Livre", "Não Realizado");
+        table[3] = new Mesa("Mesa Livre", "Não Realizado");
+        table[4] = new Mesa("Mesa Livre", "Não Realizado");
         Scanner scanner = new Scanner(System.in);
         int c=5;
         while(c!=0){
@@ -63,8 +104,17 @@ public class Main {
             switch(c){
                 case 1:
                     selecaoMesa(table);
+                    for(int y=0;y<=4;y++){
+                        if(table[y].statusPedido=="Em Andamento") {
+                            table[y].statusPedido=cozinheiro.cozinhar();
+                        }
+                    }
                     break;
-
+                case 2:
+                    entregarMesa(table);
+                    break;
+                case 3:
+                    caixa.pagar(table[1]);
             }
         }
     }
