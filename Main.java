@@ -58,7 +58,7 @@ public class Main {
         int d=5, a;
         System.out.println("Mesas disponíveis para entrega: \n");
         for(int contador=0;contador<5;contador++){
-            if(table[contador].statusMesa == "Mesa Livre"){
+            if(table[contador].statusPedido != "Completo"){
                 continue;
             }else{
                 message.append("Mesa " + (contador+1) + "\n");
@@ -82,6 +82,33 @@ public class Main {
             }else{
                 return;
             }
+        }
+    }
+
+    static void pagaments(Mesa[] table, Caixa caixa){
+        int mes;
+        Scanner scanner = new Scanner(System.in);
+        StringBuilder message = new StringBuilder();
+        System.out.println("Mesas disponíveis para pagamento: \n");
+        for(int contador=0;contador<5;contador++){
+            if(table[contador].statusPedido != "Entregue"){
+                continue;
+            }else{
+                message.append("Mesa " + (contador+1) + "\n");
+            }
+        }
+        String pagaments = message.toString();
+        System.out.println(pagaments);
+        System.out.println("0- Voltar");
+        mes = scanner.nextInt();
+        if(mes<=0 || mes>5){
+            return;
+        }else if(table[mes-1].statusPedido!="Entregue"){
+            System.out.println("Mesa Escolhida Inválida");
+            return;
+        }else{
+            caixa.pagar(table[mes-1]);
+            System.out.println("Pagamento Aprovado!");
         }
     }
 
@@ -114,7 +141,7 @@ public class Main {
                     entregarMesa(table);
                     break;
                 case 3:
-                    caixa.pagar(table[1]);
+                    pagaments(table, caixa);
             }
         }
     }
